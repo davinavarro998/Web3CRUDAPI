@@ -1,0 +1,7 @@
+node_modules/
+.secret
+.env
+.vscode/
+.idea/
+build/
+.eslintrc.json
