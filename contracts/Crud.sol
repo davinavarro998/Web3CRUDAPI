@@ -25,9 +25,9 @@ contract Crud {
     Message[] public messages;
 
     event MessageAdded(uint256 _id, string _content, uint256 _timestamp);
+    event MessageVerified(uint256 _id, uint256 _timestamp);
 
-    function readAllMessages() public view returns (Message[] memory){
-        
+    function readMessages() public view returns (Message[] memory){
         return messages;
     }
 
@@ -45,24 +45,36 @@ contract Crud {
         emit MessageAdded(_id, _content, _timestamp);
     }
 
-    function deleteMessage(uint256 _id) public onlyOwner() {
-
-    // Find the index of the message with the given ID
-    uint256 indexToDelete;
-    for (uint256 i = 0; i < messages.length; i++) {
-        if (messages[i].id == _id) {
-            indexToDelete = i;
-            break;
+    function verifyMessage(uint256 _id) public onlyOwner() returns(bool){
+        uint256 timestamp = block.timestamp;
+        for (uint256 i = 0; i < messages.length; i++) {
+            if(messages[i].id == _id) {
+                messages[i].isVerified = true;
+                break;
+            }
         }
+        emit MessageVerified(_id, timestamp);
+        return true;
     }
 
-    // Ensure that the message with the given ID was found
-    require(messages[indexToDelete].id == _id, "Message not found");
+    function deleteMessage(uint256 _id) public onlyOwner() {
+    
+        // Find the index of the message with the given ID
+        uint256 indexToDelete;
+        for (uint256 i = 0; i < messages.length; i++) {
+            if (messages[i].id == _id) {
+                indexToDelete = i;
+                break;
+            }
+        }
 
-    // Remove the message from the array by shifting elements
-    for (uint256 i = indexToDelete; i < messages.length - 1; i++) {
-        messages[i] = messages[i + 1];
+        // Ensure that the message with the given ID was found
+        require(messages[indexToDelete].id == _id, "Message not found");
+
+        // Remove the message from the array by shifting elements
+        for (uint256 i = indexToDelete; i < messages.length - 1; i++) {
+            messages[i] = messages[i + 1];
+        }
+        messages.pop();
     }
-    messages.pop();
-}
 }
