@@ -9,7 +9,18 @@ const readMessages = async (req, res) => {
 
     try {
         const result = await crudSmartContract.methods.readMessages().call();
-        res.status(200).json({ message: result.toString()});
+        const jsonResult = [];
+        for (let i = 0; i < result.length; i++) {
+          const messageShape = {
+            id:Number(result[i].id),
+            content:result[i].content,
+            timestamp:Number(result[i].timestamp),
+            isVerified:result[i].isVerified
+          };
+          jsonResult.push(messageShape);
+        }
+        console.log(jsonResult);
+        res.status(200).json(jsonResult);
 
     } catch (error) {
         console.error(error);
